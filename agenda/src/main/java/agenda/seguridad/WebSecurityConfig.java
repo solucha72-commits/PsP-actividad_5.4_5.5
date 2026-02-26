@@ -19,23 +19,23 @@ public class WebSecurityConfig {
                 .addFilterAfter(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
 
-                        // 🔓 Login libre
+                        // Login libre
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
 
-                        // 🟢 GET → ADMIN, USER, VIEWER
-                        .requestMatchers(HttpMethod.GET, "/**")
+                        // GET → ADMIN, USER, VIEWER
+                        .requestMatchers(HttpMethod.GET, "/contactos/**")
                         .hasAnyRole("ADMIN", "USER", "VIEWER")
 
-                        // 🟡 POST → ADMIN, USER
-                        .requestMatchers(HttpMethod.POST, "/**")
+                        // POST → ADMIN, USER
+                        .requestMatchers(HttpMethod.POST, "/contactos/**")
                         .hasAnyRole("ADMIN", "USER")
 
-                        // 🔵 PUT → solo ADMIN
-                        .requestMatchers(HttpMethod.PUT, "/**")
+                        // PUT → solo ADMIN
+                        .requestMatchers(HttpMethod.PUT, "/contactos/**")
                         .hasRole("ADMIN")
 
-                        // 🔴 DELETE → solo ADMIN
-                        .requestMatchers(HttpMethod.DELETE, "/**")
+                        // DELETE → solo ADMIN
+                        .requestMatchers(HttpMethod.DELETE, "/contactos/**")
                         .hasRole("ADMIN")
 
                         .anyRequest().authenticated()
