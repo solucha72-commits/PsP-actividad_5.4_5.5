@@ -14,15 +14,33 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http.csrf(csrf -> csrf.disable())
-                // Tu filtro de autorización (el que lee el token)
                 .addFilterAfter(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, Constans.LOGIN_URL).permitAll()
-                        // REGLA DE ORO: Solo el ADMIN puede borrar
-                        .requestMatchers(HttpMethod.DELETE, "/contactos/**").hasRole("ADMIN")
+
+                        // 🔓 Login libre
+                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
+
+                        // 🟢 GET → ADMIN, USER, VIEWER
+                        .requestMatchers(HttpMethod.GET, "/**")
+                        .hasAnyRole("ADMIN", "USER", "VIEWER")
+
+                        // 🟡 POST → ADMIN, USER
+                        .requestMatchers(HttpMethod.POST, "/**")
+                        .hasAnyRole("ADMIN", "USER")
+
+                        // 🔵 PUT → solo ADMIN
+                        .requestMatchers(HttpMethod.PUT, "/**")
+                        .hasRole("ADMIN")
+
+                        // 🔴 DELETE → solo ADMIN
+                        .requestMatchers(HttpMethod.DELETE, "/**")
+                        .hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 );
+
         return http.build();
     }
 }
